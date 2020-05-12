@@ -119,36 +119,6 @@ static void drawColumns(OLEDDisplay *display, int16_t x, int16_t y, const char *
     }
 }
 
-/// Draw a series of fields in a row, wrapping to multiple rows if needed
-/// @return the max y we ended up printing to
-static uint32_t drawRows(OLEDDisplay *display, int16_t x, int16_t y, const char **fields)
-{
-    // The coordinates define the left starting point of the text
-    display->setTextAlignment(TEXT_ALIGN_LEFT);
-
-    const char **f = fields;
-    int xo = x, yo = y;
-    const int COLUMNS = 2; // hardwired for two columns per row....
-    int col = 0;           // track which column we are on
-    while (*f) {
-        display->drawString(xo, yo, *f);
-        xo += SCREEN_WIDTH / COLUMNS;
-        // Wrap to next row, if needed.
-        if (++col >= COLUMNS) {
-            xo = x;
-            yo += FONT_HEIGHT;
-            col = 0;
-        }
-        f++;
-    }
-    if (col != 0) {
-        // Include last incomplete line in our total.
-        yo += FONT_HEIGHT;
-    }
-
-    return yo;
-}
-
 /// Ported from my old java code, returns distance in meters along the globe
 /// surface (by magic?)
 static float latLongToMeter(double lat_a, double lng_a, double lat_b, double lng_b)
@@ -669,10 +639,6 @@ void DebugInfo::drawFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16
         display->drawString(SCREEN_WIDTH, y+battery_height+2, channelStr);
     }
 
-    const char *fields[] = {usersStr, channelStr, nullptr};
-    //uint32_t yo = drawRows(display, x, y, fields);
-
-    //display->drawLogBuffer(x, yo);
 }
 
 } // namespace meshtastic
