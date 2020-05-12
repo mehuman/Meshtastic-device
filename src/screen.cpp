@@ -640,29 +640,39 @@ void DebugInfo::drawFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16
     char gpsStr[20];
     {
         LockGuard guard(&lock);
-        snprintf(usersStr, sizeof(usersStr), "Users %d/%d", nodesOnline, nodesTotal);
-        snprintf(channelStr, sizeof(channelStr), "%s", channelName.c_str());
+        
         if (powerStatus.haveBattery) {
-            // TODO: draw a battery icon instead of letter "B".
+            display->drawXbm(x, y, battery_width, battery_height, (const uint8_t *)battery_bits);
             int batV = powerStatus.batteryVoltageMv / 1000;
             int batCv = (powerStatus.batteryVoltageMv % 1000) / 10;
-            snprintf(batStr, sizeof(batStr), "B %01d.%02dV%c%c", batV, batCv, powerStatus.charging ? '+' : ' ',
+            snprintf(batStr, sizeof(batStr), "%01d.%02dV%c%c", batV, batCv, powerStatus.charging ? '+' : ' ',
                      powerStatus.usb ? 'U' : ' ');
+            display->drawString(x+battery_width, y, batStr);
         } else {
+            display->drawXbm(x, y, usb_width, usb_height, (const uint8_t *)usb_bits);
             snprintf(batStr, sizeof(batStr), "%s", powerStatus.usb ? "USB" : "");
+            display->drawString(x+battery_width, y, batStr);
         }
-
+        snprintf(usersStr, sizeof(usersStr), "Users %d/%d", nodesOnline, nodesTotal);
+        display->drawString(x, y+battery_height+2, usersStr);
+        
+        //Print all lines right justified
+        display->setTextAlignment(TEXT_ALIGN_RIGHT);
         if (!gpsStatus.empty()) {
             snprintf(gpsStr, sizeof(gpsStr), "GPS %s", gpsStatus.c_str());
+            display->drawString(SCREEN_WIDTH, y, gpsStr);
         } else {
             gpsStr[0] = '\0'; // Just show empty string.
         }
+    
+        snprintf(channelStr, sizeof(channelStr), "%s", channelName.c_str());
+        display->drawString(SCREEN_WIDTH, y+battery_height+2, channelStr);
     }
 
-    const char *fields[] = {batStr, gpsStr, usersStr, channelStr, nullptr};
-    uint32_t yo = drawRows(display, x, y, fields);
+    const char *fields[] = {usersStr, channelStr, nullptr};
+    //uint32_t yo = drawRows(display, x, y, fields);
 
-    display->drawLogBuffer(x, yo);
+    //display->drawLogBuffer(x, yo);
 }
 
 } // namespace meshtastic

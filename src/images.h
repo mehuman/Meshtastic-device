@@ -6,6 +6,8 @@ const uint8_t SATELLITE_IMAGE[] PROGMEM = {0x00, 0x08, 0x00, 0x1C, 0x00, 0x0E, 0
 
 const
 #include "icon.xbm"
+#include "battery.xbm"
+#include "usb.xbm"
 
 // We now programmatically draw our compass
 #if 0
