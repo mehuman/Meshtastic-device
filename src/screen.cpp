@@ -611,6 +611,7 @@ void DebugInfo::drawFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16
     {
         LockGuard guard(&lock);
         
+        // Left column
         if (powerStatus.haveBattery) {
             display->drawXbm(x, y, battery_width, battery_height, (const uint8_t *)battery_bits);
             int batV = powerStatus.batteryVoltageMv / 1000;
@@ -626,14 +627,14 @@ void DebugInfo::drawFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16
         snprintf(usersStr, sizeof(usersStr), "Users %d/%d", nodesOnline, nodesTotal);
         display->drawString(x, y+battery_height+2, usersStr);
         
-        //Print all lines right justified
+        // Right column
         display->setTextAlignment(TEXT_ALIGN_RIGHT);
         if (!gpsStatus.empty()) {
             snprintf(gpsStr, sizeof(gpsStr), "GPS %s", gpsStatus.c_str());
-            display->drawString(SCREEN_WIDTH, y, gpsStr);
         } else {
-            gpsStr[0] = '\0'; // Just show empty string.
+            gpsStr[0] = "No GPS found"; // Just show empty string.
         }
+        display->drawString(SCREEN_WIDTH, y, gpsStr);
     
         snprintf(channelStr, sizeof(channelStr), "%s", channelName.c_str());
         display->drawString(SCREEN_WIDTH, y+battery_height+2, channelStr);
